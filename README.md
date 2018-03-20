@@ -1,2 +1,2 @@
-### LazyPie
-# Tool made using python colection different pentest scripts
+# $ LazyPie $
+#### Tool made using python colection different pentest scripts
