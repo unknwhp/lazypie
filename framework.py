@@ -34,12 +34,12 @@ def floodhttp(host,port):
 			print 'Invalid host/port\n'
 			break
 def usage():
-	print '# Usage example:'
-	print '\tlazy# use 1'
-	print '\tlazy/ddos# set_script flood/http'
-	print '\tlazy/ddos/flood/http# set host=google.com'
-	print '\tlazy/ddos/flood/http# set port=80'
-	print '\tlazy/ddos/flood/http# run\n'
+	print '# Usage ex:'
+	print '  lazy# use 1'
+	print '  lazy/ddos# set_script flood/http'
+	print '  lazy/ddos/flood/http# set host=google.com'
+	print '  lazy/ddos/flood/http# set port=80'
+	print '  lazy/ddos/flood/http# run\n'
 	
 def floodtcp(host,port):
 	import socket, random, sys
