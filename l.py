@@ -1,20 +1,25 @@
-import os, sys, platform
+import os, sys, platform, random
 import framework 
 # Define the variables
-b = '''
-############
-# LazyPie  #
-############
-'''
+b1 = '''
+  _                    ____  _      
+ | |    __ _ _____   _|  _ \(_) ___ 
+ | |   / _` |_  / | | | |_) | |/ _ \\
+ | |__| (_| |/ /| |_| |  __/| |  __/
+ |_____\__,_/___|\__, |_|   |_|\___|
+                 |___/
+ # https://github.com/unknwhp/lazypie #
+             # By unknwhp #\n'''
+
 text = 'lazy# '
 avb = {'1':'ddos','2':'bruteforce','3':'payloads'}
 md = ''
 cmnds = ['help','exit','clear','','modules','use','set','scripts','options','set_script','run','banner','back','usage','info']
-scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell']}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell']}
 script = ''
 opts = {}
 _options = []
-set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist']}
+set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port']}
 val1 = ''
 val2 = ''
 opt1 = ''
@@ -28,7 +33,7 @@ def back():
 	script = ''
 	opts = {}
 	_options = []
-	set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist']}
+	set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port']}
 	opt1 = ''
 	opt2 = ''
 def info(opt1, opt2):
@@ -41,7 +46,7 @@ def info(opt1, opt2):
 			print '--------------------\n'+md+'/'+script+':\n[+] '+val1+' = '+opt1+'\n[+] '+val2+' = '+opt2
 	else:
 		print '[!] Please select a script first'
-def set(value):
+def set(value): # Set parsed values
 	global opt1
 	global opt2
 	global val1
@@ -55,9 +60,9 @@ def set(value):
 		opt2 = val
 		val2 = opt
 def banner():
-	print b 
+	print b1 
 def clear():
-	if platform.system() == 'Windows':
+	if platform.system() == 'Windows': # Verify operational system
 		os.system('cls')
 	else:
 		os.system('clear')
@@ -99,20 +104,22 @@ def exit():
 	sys.exit()
 	exit()
 def help():
-	print '[*] Availabe commands: '
-	print '''[+] help .......... Show this mensage
-[+] usage .......... Print usage example
-[+] banner .......... Print banner
-[+] clear ........... Clears the user screen
-[+] exit .......... Quit the program
-[+] modules .......... Show available modules
-[+] use .......... Select a module to use
-[+] scripts .......... Show available scripts for selected module
-[+] set_script .......... Select a script to use
-[+] options .......... Show the options for selected script
-[+] set .......... Define a option
-[+] info ........... Show assigned values for selected script
-[+] back .......... Reset selected options, modules, scripts\n'''
+	print '--> Availabe commands: '
+	print '''
+- [+] help .......... Show this mensage
+- [+] usage .......... Print usage example
+- [+] banner .......... Print banner
+- [+] clear ........... Clears the user screen
+- [+] exit .......... Quit the program
+# {+} back .......... Reset selected options, modules, script
+# {+} modules .......... Show available modules
+# {+} use .......... Select a module to use
+# {+} scripts .......... Show available scripts for selected module >> select module first
+# {+} set_script .......... Select a script to use 
+# {+} options .......... Show the options for selected script >> have to select script with "set_script" first
+# {+} set .......... Define a option >> ex: set "option_name" = "value"
+# {+} info ........... Show assigned values for selected script\n'''
+
 
 def run(script,opt1,opt2):
 	global _option
