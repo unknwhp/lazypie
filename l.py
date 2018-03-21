@@ -1,13 +1,29 @@
 import os, sys, platform, random
-import framework 
+import framework
+try:
+	from colorama import init
+	init()
+	blue='\033[01;34m'
+	red='\033[01;31m'
+	green='\033[01;32m'
+	yellow='\033[01;33m'
+	white='\033[01;37m'
+except ImportError:
+	print 'Colorama module not founded!'
+	print 'Please install it, using no colors'
+	blue=''
+	red=''
+	green=''
+	yellow=''
+	white=''
 # Define the variables
-b1 = '''
+b1 = red+'''
   _                    ____  _      
  | |    __ _ _____   _|  _ \(_) ___ 
  | |   / _` |_  / | | | |_) | |/ _ \\
  | |__| (_| |/ /| |_| |  __/| |  __/
  |_____\__,_/___|\__, |_|   |_|\___|
-                 |___/
+                 |___/'''+white+'''
  # https://github.com/unknwhp/lazypie #
              # By unknwhp #\n'''
 
@@ -45,7 +61,7 @@ def info(opt1, opt2):
 		else:
 			print '--------------------\n'+md+'/'+script+':\n[+] '+val1+' = '+opt1+'\n[+] '+val2+' = '+opt2
 	else:
-		print '[!] Please select a script first'
+		print yellow+'[!]'+white+' Please select a script first'
 def set(value): # Set parsed values
 	global opt1
 	global opt2
@@ -78,16 +94,16 @@ def use(m):
 		text = 'lazy/%s# ' % avb[m]
 		md = avb[m]
 	else:
-		print '[!] Invalid module'
+		print '%s[!]%s Invalid module' %(yellow,white)
 		print 'Type "modules" for more information'
 		print 'Ex: use 1'
 def scripts(sc):
 	if md != '':
 		for s in scs[md]:
-			print '[+]'+s
+			print green+'[+]'+white+s
 		print ''
 	else:
-		print '[!] Please Select a module first'
+		print '%s[!]%s Please Select a module first' %(yellow,white)
 def set_script(sc):
 	global text
 	global script
@@ -96,7 +112,7 @@ def set_script(sc):
 		script = sc
 		
 	else:
-		print '[!] Invalid script selected'
+		print '%s[!]%s Invalid script selected' %(yellow,white)
 		print 'Type "scripts" for more information'
 def options(script):
 	framework.options(script,opt1,opt2)
@@ -104,21 +120,20 @@ def exit():
 	sys.exit()
 	exit()
 def help():
-	print '--> Availabe commands: '
-	print '''
-- [+] help .......... Show this mensage
-- [+] usage .......... Print usage example
-- [+] banner .......... Print banner
-- [+] clear ........... Clears the user screen
-- [+] exit .......... Quit the program
-# {+} back .......... Reset selected options, modules, script
-# {+} modules .......... Show available modules
-# {+} use .......... Select a module to use
-# {+} scripts .......... Show available scripts for selected module >> select module first
-# {+} set_script .......... Select a script to use 
-# {+} options .......... Show the options for selected script >> have to select script with "set_script" first
-# {+} set .......... Define a option >> ex: set "option_name" = "value"
-# {+} info ........... Show assigned values for selected script\n'''
+	print blue+'--> Availabe commands: \n'
+	print '%s[+]%s help .......... Show this mensage' %(green,white)
+	print '%s[+]%s usage .......... Print usage example' %(green,white)
+	print '%s[+]%s banner .......... Print banner' %(green,white)
+	print '%s[+]%s clear ........... Clears the user screen' %(green,white)
+	print '%s[+]%s exit .......... Quit the program' %(green,white)
+	print '%s[+]%s back .......... Reset selected options, modules, script' %(green,white)
+	print '%s[+]%s modules .......... Show available modules' %(green,white)
+	print '%s[+]%s use .......... Select a module to use' %(green,white)
+	print '%s[+]%s scripts .......... Show available scripts for selected module >> select module first' %(green,white)
+	print '%s[+]%s set_script .......... Select a script to use ' %(green,white)
+	print '%s[+]%s options .......... Show the options for selected script' %(green,white)
+	print '%s[+]%s set .......... Define a option >> ex: set "option_name" = "value"' %(green,white)
+	print '%s[+]%s info ........... Show assigned values for selected script\n' %(green,white)
 
 
 def run(script,opt1,opt2):
@@ -134,10 +149,10 @@ try:
 	banner()
 	help()
 	while 1:
-		cmd = raw_input(text).replace(' ','')
+		cmd = raw_input(red+text+white).replace(' ','')
 		args = cmd[:3]
 		if cmd not in cmnds and args not in cmnds:
-			print '[!] Invalid command'
+			print '%s[!]%s Invalid command' %(yellow,white)
 			print 'Type help for more information'
 		if cmd == 'banner':
 			clear()
@@ -163,7 +178,7 @@ try:
 			set_script(cmd[10:])
 		if cmd == 'run':
 			if opt1 == '' or opt2 == '' and script != 'flood/udp':
-				print '[!] Incorrect options type options for more information'
+				print '%s[!]%s Incorrect options type options for more information' %(yellow,white)
 			else:
 				run(script,opt1,opt2)
 		if cmd == 'back':
