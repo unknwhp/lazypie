@@ -10,7 +10,8 @@ try:
 	white='\033[01;37m'
 except ImportError:
 	print 'Colorama module not founded!'
-	print 'Please install it, using no colors'
+	print 'Please install it'
+	print '[!] Colors are off now'
 	blue=''
 	red=''
 	green=''
@@ -69,12 +70,15 @@ def set(value): # Set parsed values
 	global val2
 	opt = value.split('=')[0]
 	val = value.split('=')[1]
-	if set_opts[script][0] == opt:
-		val1 = opt
-		opt1 = val
-	if set_opts[script][1] == opt:
-		opt2 = val
-		val2 = opt
+	try:
+		if set_opts[script][0] == opt:
+			val1 = opt
+			opt1 = val
+		if set_opts[script][1] == opt:
+			opt2 = val
+			val2 = opt
+	except KeyError:
+		print yellow+'[!]'+white+' Please select a script first'
 def banner():
 	print b1 
 def clear():
@@ -171,7 +175,11 @@ try:
 			scripts(md)
 		if args == 'set' and cmd[3:] != '' and cmd[:10] != 'set_script':
 			val = cmd[3:]
-			set(val)
+			if md == '' or script == '':
+				print '%s[!]%s Invalid script selected' %(yellow,white)
+				print 'Type "scripts" for more information'
+			else:
+				set(val)
 		if cmd == 'options':
 			options(script)
 		if cmd[:10] == 'set_script':
