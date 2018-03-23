@@ -1,4 +1,5 @@
-# (print available modules)>> lazy# modules
+# (print available modules)>>
+lazy# modules
 
 [1]     ddos
 
@@ -6,9 +7,11 @@
 
 [3]     payloads
 
-# (select module to use [by number])>> lazy# use 1
+# (select module to use [by number])>>
+lazy# use 1
 
-# (print available scripts for the modules)>> lazy/ddos# scripts
+# (print available scripts for the modules)>>
+lazy/ddos# scripts
 
 [+]flood/http
 
@@ -16,9 +19,11 @@
 
 [+]flood/udp
 
-# (select script to use)>> lazy/ddos# set_script flood/http
+# (select script to use)>>
+lazy/ddos# set_script flood/http
 
-# (print options for selected script)>> lazy/ddos/flood/http# options
+# (print options for selected script)>>
+lazy/ddos/flood/http# options
 
 Options:
 
@@ -32,13 +37,16 @@ lazy/ddos/flood/http# set host = google.com
 
 lazy/ddos/flood/http# set port = 80
 
-# (info)>>lazy/ddos/flood/http# info
+# (info)>>
+lazy/ddos/flood/http# info
+
 ddos/flood/http:
 [+] host = google.com
 
 [+] port = 80
 
-# (starting the script)>> lazy/ddos/flood/http# run
+# (starting the script)>>
+lazy/ddos/flood/http# run
 
 [+] Sending request 15300 to google.com:80^C
 
