@@ -187,8 +187,9 @@ def listener():
 			print green+'[+]'+white+' Connection from', addr
 			while True:
 				cmd = raw_input('shell# ')
-				c.send(cmd)
-				print c.recv(1024) # response
+				if cmd != '':
+					c.send(cmd)
+					print c.recv(1024) # response
 		except KeyboardInterrupt:
 			break
 			exit()
