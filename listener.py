@@ -29,13 +29,13 @@ while 1:
     try:
         c, addr = s.accept()
         print '%s[+]%s Connection from' %(green,white), addr 
-        while True:
-            cmd = raw_input('shell# ')
+        while True:   
+            cmd = raw_input('shell@%s# ' %addr[0])
             if cmd == '':
                 pass
             else:
                 c.send(cmd)
-                print c.recv(1024)
+                print str(c.recv(1024))
     except KeyboardInterrupt:
         break
         exit()
