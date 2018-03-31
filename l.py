@@ -19,8 +19,8 @@ except ImportError:
 	white=''
 # Define the variables
 b1 = red+'''
-  _                    ____  _      
- | |    __ _ _____   _|  _ \(_) ___ 
+  _                    ____  _
+ | |    __ _ _____   _|  _ \(_) ___
  | |   / _` |_  / | | | |_) | |/ _ \\
  | |__| (_| |/ /| |_| |  __/| |  __/
  |_____\__,_/___|\__, |_|   |_|\___|
@@ -36,7 +36,7 @@ scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hash
 script = ''
 opts = {}
 _options = []
-set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
+set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
 val1 = ''
 val2 = ''
 opt1 = ''
@@ -50,11 +50,11 @@ def back():
 	script = ''
 	opts = {}
 	_options = []
-	set_opts = {'flood/http':['host','port'], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port']}
+	set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port']}
 	opt1 = ''
 	opt2 = ''
 def info(opt1, opt2):
-	if script != '': 
+	if script != '':
 		val1 = set_opts[script][0]
 		val2 = set_opts[script][1]
 		if val2 == '':
@@ -80,7 +80,7 @@ def set(value): # Set parsed values
 	except KeyError:
 		print yellow+'[!]'+white+' Please select a script first'
 def banner():
-	print b1 
+	print b1
 def clear():
 	if platform.system() == 'Windows': # Verify operational system
 		os.system('cls')
@@ -114,7 +114,7 @@ def set_script(sc):
 	if md != '' and sc in scs[md]:
 		text = 'lazy/'+md+'/'+sc+'# '
 		script = sc
-		
+
 	else:
 		print '%s[!]%s Invalid script selected' %(yellow,white)
 		print 'Type "scripts" for more information'
@@ -185,7 +185,7 @@ try:
 		if cmd[:10] == 'set_script':
 			set_script(cmd[10:])
 		if cmd == 'run':
-			if opt1 == '' or opt2 == '' and script != 'flood/udp':
+			if opt1 == '' or opt2 == '' and script != 'flood/udp' and script != 'flood/http':
 				print '%s[!]%s Incorrect options type options for more information' %(yellow,white)
 			else:
 				run(script,opt1,opt2)
