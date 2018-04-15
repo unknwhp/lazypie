@@ -13,10 +13,10 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']} # SCRIPTS
 opt1 = ''
 opt2 = ''
-infos = {'flood/http':
+infos = {'flood/http': # Help for each script
 	'Options:\nurl .... target to attack    '+opt1,'flood/tcp':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
