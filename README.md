@@ -6,6 +6,10 @@
 
 #### user@user:~# python install.py
 
+#### [+] Program sucessfully installed!
+
+#### user@user:~# python l.py
+
 # Terms and conditions:
 
 ### ! COPYRIGHT (c) 2018 unknwhp
