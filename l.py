@@ -48,11 +48,11 @@ text = 'lazy# '
 avb = {'1':'ddos','2':'bruteforce','3':'payloads'}
 md = ''
 cmnds = ['help','exit','clear','','modules','use','set','scripts','options','set_script','run','banner','back','usage','info']
-scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
 script = ''
 opts = {}
 _options = []
-set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
+set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'flood/ftp':['host','bytes'], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
 val1 = ''
 val2 = ''
 opt1 = ''
@@ -128,7 +128,7 @@ def set_script(sc):
 	global text
 	global script
 	if md != '' and sc in scs[md]:
-		text = 'lazy/'+md+'/'+sc+'# '
+		text = 'lazy/'+md+'/'+sc.replace('/','_')+'# '
 		script = sc
 
 	else:
@@ -192,10 +192,13 @@ try:
 		if args == 'set' and cmd[3:] != '' and cmd[:10] != 'set_script':
 			val = cmd[3:]
 			if md == '' or script == '':
-				print '%s[!]%s Invalid script selected' %(yellow,white)
-				print 'Type "scripts" for more information'
-			else:
+				print('%s[!]%s Invalid script selected' %(yellow,white))
+				print('Type "scripts" for more information')
+			if '=' in val:
 				set(val)
+			else:
+				print('%s[!]%s Invalid Syntaxe' %(yellow,white))
+				print('Type "usage" for help')
 		if cmd == 'options':
 			options(script)
 		if cmd[:10] == 'set_script':
