@@ -1,4 +1,12 @@
 import sys, os, platform, pip, time
+print '''
+             (
+              )
+         __..---..__
+     ,-='  /  |  \  `=-.
+    :--..___________..--;
+     \\.,_____________,./
+'''
 time.sleep(1.5)
 print('[*] Creating output dir...\n')
 if not os.path.isdir('output'):
