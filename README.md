@@ -5,8 +5,7 @@
 # Instalation:
 
 #### user@user:~# python install.py
-
-#### [+] Program sucessfully installed!
+ [+] Program sucessfully installed!
 
 #### user@user:~# python l.py
 
