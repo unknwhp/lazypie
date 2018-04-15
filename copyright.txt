@@ -1,0 +1,8 @@
+! COPYRIGHT (c) 2018 unknwhp
+############################################
+> I'm not responsible for your actions
+> This program is developed only for legal purposes
+> When using this program you are aware that only you are responsible for your actions and they may have consequences
+> Tool developed for pentesters and students
+! DO NOT USE THIS PROGRAM FOR ILEGAL ISSUES
+############################################
