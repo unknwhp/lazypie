@@ -1,3 +1,19 @@
+'''
+  _                    ____  _
+ | |    __ _ _____   _|  _ \(_) ___
+ | |   / _` |_  / | | | |_) | |/ _ \\
+ | |__| (_| |/ /| |_| |  __/| |  __/
+ |_____\__,_/___|\__, |_|   |_|\___|
+                 |___/		 
+! COPYRIGHT (c) 2018 unknwhp
+############################################
+> I'm not responsible for your actions
+> This program is developed only for legal purposes
+> When using this program you are aware that only you are responsible for your actions and they may have consequences
+> Tool developed for pentesters and students
+! DO NOT USE THIS PROGRAM FOR ILEGAL ISSUES
+############################################
+'''
 import os, sys, platform, random
 import framework
 try:
