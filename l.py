@@ -5,6 +5,8 @@
  | |__| (_| |/ /| |_| |  __/| |  __/
  |_____\__,_/___|\__, |_|   |_|\___|
                  |___/		 
+	@ Github - https://github.com/unknwhp/lazypie
+		@ Developed by unknwhp
 ! COPYRIGHT (c) 2018 unknwhp
 ############################################
 > I'm not responsible for your actions
@@ -42,23 +44,27 @@ b1 = red+'''
  |_____\__,_/___|\__, |_|   |_|\___|
                  |___/'''+white+'''
  # https://github.com/unknwhp/lazypie #
-	    # Version 1.1.5 #\n'''
+             # By unknwhp #\n'''
 
 text = 'lazy# '
-avb = {'1':'ddos','2':'bruteforce','3':'payloads'}
+avb = {'1':'ddos','2':'bruteforce','3':'payloads','4':'custom'}
 md = ''
 cmnds = ['help','exit','clear','','modules','use','set','scripts','options','set_script','run','banner','back','usage','info']
-scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc'],'custom':os.listdir(os.getcwd()+'\\'+'custom')}
 script = ''
 opts = {}
 _options = []
+
 set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'flood/ftp':['host','bytes'], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
+for s in scs['custom']:
+    set_opts[s] = ['run','']
 val1 = ''
 val2 = ''
 opt1 = ''
 opt2 = ''
 
 # Define the commands
+
 def back():
 	global acpted, text, avb, md, cmnds, scs, script, opts, _option, set_opts, opt1, opt2
 	text = 'lazy# '
@@ -106,6 +112,8 @@ def modules():
 	print '''[1]	ddos
 [2]	bruteforce
 [3]	payloads
+
+[4]	custom
 	'''
 def use(m):
 	global text
@@ -130,7 +138,6 @@ def set_script(sc):
 	if md != '' and sc in scs[md]:
 		text = 'lazy/'+md+'/'+sc.replace('/','_')+'# '
 		script = sc
-
 	else:
 		print '%s[!]%s Invalid script selected' %(yellow,white)
 		print 'Type "scripts" for more information'
@@ -154,15 +161,17 @@ def help():
 	print '%s[+]%s options .......... Show the options for selected script' %(green,white)
 	print '%s[+]%s set .......... Define a option >> ex: set "option_name" = "value"' %(green,white)
 	print '%s[+]%s info ........... Show assigned values for selected script\n' %(green,white)
-
-
 def run(script,opt1,opt2):
 	global _option
 	global opts
+	global cmd
+	if md == 'custom':
+		opt2 = '__custom__'
 	framework.run(script,opt1,opt2)
 	print ''
 	_option = []
 	opts = {}
+	cmd = ''
 # Run the program
 try:
 	clear()
@@ -204,6 +213,8 @@ try:
 		if cmd[:10] == 'set_script':
 			set_script(cmd[10:])
 		if cmd == 'run':
+			if md == 'custom':
+				run(script,opt1,opt2)
 			if opt1 == '' or opt2 == '' and script != 'flood/udp' and script != 'flood/http':
 				print '%s[!]%s Incorrect options type options for more information' %(yellow,white)
 			else:
