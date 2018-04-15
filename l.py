@@ -42,7 +42,7 @@ b1 = red+'''
  |_____\__,_/___|\__, |_|   |_|\___|
                  |___/'''+white+'''
  # https://github.com/unknwhp/lazypie #
-             # By unknwhp #\n'''
+	    # Version 1.1.5 #\n'''
 
 text = 'lazy# '
 avb = {'1':'ddos','2':'bruteforce','3':'payloads'}
