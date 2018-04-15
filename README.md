@@ -6,4 +6,20 @@
 
 #### user@user:~# python install.py
 
- 
+# Terms and conditions:
+
+##! COPYRIGHT (c) 2018 unknwhp
+
+############################################
+
+###1> I'm not responsible for your actions
+
+###2> This program is developed only for legal purposes
+
+###3> When using this program you are aware that only you are responsible for your actions and they may have consequences
+
+###4> Tool developed for pentesters and students
+
+##! DO NOT USE THIS PROGRAM FOR ILEGAL ISSUES
+
+############################################
