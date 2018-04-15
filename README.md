@@ -26,3 +26,49 @@
 ### ! DO NOT USE THIS PROGRAM FOR ILEGAL ISSUES
 
 ############################################
+
+# Usage: 
+
+#### user@user:~# python l.py
+#### lazy# 
+
+### Module Selection:
+#### lazy# modules
+ (1) ddos
+ (2) bruteforce
+ (3) payloads
+ 
+#### Select the module by number using the command 'use', EXAMPLE:
+#### lazy# use 1
+#### lazy/ddos# 
+
+### Selecting a script:
+#### lazy/ddos# scripts
+ [+]flood/http
+ [+]flood/tcp
+ [+]flood/udp
+ 
+ #### Select the script by name using the command 'set_script', EXAMPLE:
+ #### lazy/ddos# set_script flood/http
+ #### lazy/ddos/flood/http# 
+ 
+ ### Defining the options:
+ #### lazy/ddos/flood/http# options
+ Options:
+ url .... target to attack
+ 
+ #### Define a option using the command 'set', EXAMPLE:
+ #### lazy/ddos/flood/http# set url=http://google.com
+ ##### OBS: do not for to put '=' between the option and the value
+ 
+ ### Starting the script:
+ #### lazy/ddos/flood/http# info
+ --------------------
+ ddos/flood/http:
+ [+] url = http://google.com
+ 
+ #### lazy/ddos/flood/http# run
+ [+] Sending request 19037 to http://google.com
+  ! host is down or unavailable
+ #### lazy/ddos/flood/http# back
+ #### lazy#
