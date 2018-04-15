@@ -35,7 +35,9 @@
 ### Module Selection:
 #### lazy# modules
  (1) ddos
+ 
  (2) bruteforce
+ 
  (3) payloads
  
 #### Select the module by number using the command 'use', EXAMPLE:
@@ -45,7 +47,9 @@
 ### Selecting a script:
 #### lazy/ddos# scripts
  [+]flood/http
+ 
  [+]flood/tcp
+ 
  [+]flood/udp
  
  #### Select the script by name using the command 'set_script', EXAMPLE:
@@ -55,6 +59,7 @@
  ### Defining the options:
  #### lazy/ddos/flood/http# options
  Options:
+ 
  url .... target to attack
  
  #### Define a option using the command 'set', EXAMPLE:
@@ -64,11 +69,14 @@
  ### Starting the script:
  #### lazy/ddos/flood/http# info
  --------------------
+ 
  ddos/flood/http:
+ 
  [+] url = http://google.com
  
  #### lazy/ddos/flood/http# run
  [+] Sending request 19037 to http://google.com
+ 
   ! host is down or unavailable
  #### lazy/ddos/flood/http# back
  #### lazy#
