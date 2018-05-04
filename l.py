@@ -44,18 +44,18 @@ b1 = red+'''
  |_____\__,_/___|\__, |_|   |_|\___|
                  |___/'''+white+'''
  # https://github.com/unknwhp/lazypie #
-            # Version 1.2.0'''
+             # By unknwhp #\n'''
 
 text = 'lazy# '
 avb = {'1':'ddos','2':'bruteforce','3':'payloads','4':'custom'}
 md = ''
 cmnds = ['help','exit','clear','','modules','use','set','scripts','options','set_script','run','banner','back','usage','info']
-scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc'],'custom':os.listdir(os.getcwd()+'\\'+'custom')}
+scs = {'ddos':['flood/http','flood/tcp','flood/udp','flood/ftp'],'bruteforce':['offline/hashkiller','http/page_finder'],'payloads':['fud/python/reverse_shell','fud/python/bind_shell','windows/nc','linux/reverse_tcp'],'custom':os.listdir(os.getcwd()+'\\'+'custom')} # SCRIPTS
 script = ''
 opts = {}
 _options = []
 
-set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'flood/ftp':['host','bytes'], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port']}
+set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'flood/ftp':['host','bytes'], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port'], 'http/page_finder':['url','wordlist'], 'linux/reverse_tcp':['host','port']}
 for s in scs['custom']:
     set_opts[s] = ['run','']
 val1 = ''
@@ -72,7 +72,7 @@ def back():
 	script = ''
 	opts = {}
 	_options = []
-	set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port']}
+	set_opts = {'flood/http':['url',''], 'flood/tcp':['host','port'], 'flood/udp':['host',''], 'flood/ftp':['host','bytes'], 'offline/hashkiller':['hash','wordlist'], 'fud/python/reverse_shell':['host','port'], 'fud/python/bind_shell':['host','port'], 'windows/nc':['host','port'], 'http/page_finder':['url','wordlist']}
 	opt1 = ''
 	opt2 = ''
 def info(opt1, opt2):
